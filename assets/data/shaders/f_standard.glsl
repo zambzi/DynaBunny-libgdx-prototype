@@ -2,7 +2,7 @@
 precision mediump float;
 #endif
 
-#define MAX_LIGHTS 8
+#define MAX_LIGHTS 3
 
 uniform vec3 direction[MAX_LIGHTS];
 uniform vec4 ambientColor[MAX_LIGHTS];
@@ -31,7 +31,7 @@ void main()
 	vec4 specularLight = vec4(0.0);
 	
 	int i = 0;
-	while(i<u_numLights || i<MAX_LIGHTS){
+	while(i<MAX_LIGHTS){
 		
 		float diffValue = max(0.0, dot(v_eyeVec, direction[i]));
 		vec3 halfVector = normalize(direction[i] + viewDir);
