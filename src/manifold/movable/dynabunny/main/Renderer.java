@@ -30,8 +30,8 @@ public class Renderer extends Game{
 	private PerspectiveCamera cam;
 	private ShaderProgram standardShader;
 	private LightManager lights = null;
-	private float depthRangeMin = 0;
-	private float depthRangeMax = 10.0f;
+	private float depthRangeMin = 0.0f;
+	private float depthRangeMax = 2.0f;
 	
 	
 	@Override
@@ -43,7 +43,7 @@ public class Renderer extends Game{
 		pawnManager = new PawnManager();
 		createPawns();
 		setLights(new LightManager(1,cam));
-		lights.getLight(0).setDirection(-1,1,-1);
+		lights.getLight(0).setDirection(1,1,-1);
 		inputManager = new InputManager();
 	}
 
@@ -56,8 +56,15 @@ public class Renderer extends Game{
 	@Override
 	public void render() {
 		setGLStuff();
+		
+		//following is just screwing up with camera
 		cam.rotateAround(new Vector3(0,0,0), new Vector3(0,1,0), -inputManager.dragY);
-		cam.rotateAround(new Vector3(0,0,0), new Vector3(1,0,0), inputManager.dragX);
+		//Camera zoom-on-target functionality:
+		Vector3 vec = cam.position.cpy();
+		vec.nor();
+		vec.mul((float)inputManager.dragX/2);
+		cam.translate(vec);
+		
 		cam.update();
 		
 		standardShader.begin();
@@ -114,7 +121,7 @@ public class Renderer extends Game{
 	
 	private void createPawns(){
 		try {
-			pawnManager.addPawn("bunny", "test.md2", "bunny-warface.png", cam);
+			pawnManager.addPawn("bunny", "bunny2-small.md2", "bunny-warface.png", cam);
 			pawnManager.addPawn("bunny1", "bunny2-small.md2", "bunny-warface.png", cam);
 			pawnManager.addPawn("bunny2", "bunny2-small.md2", "bunny.png", cam);
 			pawnManager.addPawn("bunny3", "bunny2-small.md2", "bunny.png", cam);
@@ -138,6 +145,19 @@ public class Renderer extends Game{
 		pawnManager.getPawn("bunny4").setPosition(new Vector3(-25,0,-5));
 		pawnManager.getPawn("bunny5").setPosition(new Vector3(-25,0,-15));
 		pawnManager.getPawn("bunny6").setPosition(new Vector3(-25,0,-25));
+		
+		pawnManager.getPawn("bunny").setAmbientFactor(.1f,.1f,.1f,.1f);
+		pawnManager.getPawn("bunny").setDiffuseFactor(.3f,.3f,.3f,.3f);
+		pawnManager.getPawn("bunny").setSpecularFactor(1,1,1,1);
+		pawnManager.getPawn("bunny").setShininess(25);
+		
+		pawnManager.getPawn("bunny").animate("walkCycle", true);
+		pawnManager.getPawn("bunny1").animate("idle1", true);
+		pawnManager.getPawn("bunny2").animate("idle2", true);
+		pawnManager.getPawn("bunny3").animate("shake", true);
+		pawnManager.getPawn("bunny4").animate("dodge", true);
+		pawnManager.getPawn("bunny5").animate("idle1", true);
+		pawnManager.getPawn("bunny6").animate("walkCycle", true);
 	}
 	
 	private void setGLStuff(){

@@ -47,6 +47,8 @@ public class Pawn{
     	private float angle = 0;
     	private Vector3 axis = new Vector3(0,0,0);
     	private Vector3 scale = new Vector3(1,1,1);
+    	private String animationName = "still";
+    	private boolean animLoop = false;
     	
     	//material values
     	private float[] ambientFactor = new float[]{0.1f,0.1f,0.1f,0.1f};
@@ -85,7 +87,7 @@ public class Pawn{
         	if(model == null)
         		throw new IllegalStateException("draw called before a mesh has been created");
         	resetTexture();
-        	animation();
+        	if(animationName!="still")animation();
         	transformMatrix(cam);
     		manager.getTexture(texture).bind();
         	setUniforms(meshShader);
@@ -117,10 +119,20 @@ public class Pawn{
         
         private void animation(){//TODO: przerobic na poprawna klase animacji
         	animTime += Gdx.graphics.getDeltaTime();
-    		if (animTime >= manager.getModel(model).getAnimation("walkCycle").totalDuration) {
+    		if (animTime >= manager.getModel(model).getAnimation(animationName).totalDuration) {
     			animTime = 0;
     		}
-    		manager.getModel(model).setAnimation("walkCycle", animTime, true);
+    		manager.getModel(model).setAnimation(animationName, animTime, animLoop);
+        }
+        
+        /**
+         * Sets animation for Pawn.
+         * @param name - name of the animation
+         * @param loop - specifies whether the animation should loop
+         */
+        public void animate(String name, boolean loop){
+        	animationName = name;
+        	animLoop = loop;
         }
         
         public void dispose(){
