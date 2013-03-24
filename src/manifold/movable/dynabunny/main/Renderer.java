@@ -114,13 +114,13 @@ public class Renderer extends Game{
 	
 	private void createPawns(){
 		try {
-			pawnManager.addPawn("bunny", "bunny2-small.md2", "bunny-warface.png", cam);
-			pawnManager.addPawn("bunny1", "bunny2-small.md2", "bunny.png", cam);
+			pawnManager.addPawn("bunny", "test.md2", "bunny-warface.png", cam);
+			pawnManager.addPawn("bunny1", "bunny2-small.md2", "bunny-warface.png", cam);
 			pawnManager.addPawn("bunny2", "bunny2-small.md2", "bunny.png", cam);
 			pawnManager.addPawn("bunny3", "bunny2-small.md2", "bunny.png", cam);
 			pawnManager.addPawn("bunny4", "bunny2-small.md2", "bunny.png", cam);
 			pawnManager.addPawn("bunny5", "bunny2-small.md2", "bunny.png", cam);
-			pawnManager.addPawn("bunny6", "bunny2-small.md2", "bunny-warface.png", cam);
+			pawnManager.addPawn("bunny6", "test.md2", "bunny-warface.png", cam);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

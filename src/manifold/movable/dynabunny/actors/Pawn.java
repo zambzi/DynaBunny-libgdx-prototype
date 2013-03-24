@@ -75,13 +75,16 @@ public class Pawn{
         			new TextureAttribute(manager.getTexture(texture), 0, "u_texture"));
     		manager.getModel(model).setMaterial(material);
         }
-
-        
+        //TODO: Not sure, but this may be a little crunchy
+        private void resetTexture(){
+        	material.getAttribute(0).set(new TextureAttribute(manager.getTexture(texture), 0, "u_texture"));
+        	manager.getModel(model).setMaterial(material);
+        }
         
         public void draw(PerspectiveCamera cam, ShaderProgram meshShader){
         	if(model == null)
         		throw new IllegalStateException("draw called before a mesh has been created");
-        	
+        	resetTexture();
         	animation();
         	transformMatrix(cam);
     		manager.getTexture(texture).bind();
