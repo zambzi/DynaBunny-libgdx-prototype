@@ -23,6 +23,17 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
+
+/**
+ * 
+ * @author zambzi
+ *
+ * Every map object gets its origins from here.
+ * Basically its abridged and less poetic version of book of genesis...
+ * Use only with PawnManager!
+ *
+ */
+
 public class Pawn{
 	
 		private ModelManager manager;

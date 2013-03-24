@@ -3,6 +3,15 @@ package manifold.movable.dynabunny.actors;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 
+/**
+ * 
+ * @author zambzi
+ *
+ * Simple class that holds single Light data
+ * Use only with LightManager!
+ *
+ */
+
 public class Light {
 	public float[] direction = new float[3];
 	public float[] ambientColor = new float[4];

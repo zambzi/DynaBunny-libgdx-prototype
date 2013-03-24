@@ -11,6 +11,15 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.BufferUtils;
 
+/**
+ * 
+ * @author zambzi
+ *
+ * Creates and manages Lights
+ * also passes uniforms to fragment shader
+ *
+ */
+
 public class LightManager {
 	private Light[] lights;
 	private int lightsAmount;
@@ -46,7 +55,6 @@ public class LightManager {
 	}
 	
 	public void bind(PerspectiveCamera cam, ShaderProgram shader){
-		shader.setUniformi(shader.getUniformLocation("u_numLights"), lightsAmount);
 		shader.setUniformf(shader.getUniformLocation("u_camDirection"), cam.direction);
 		int bufferLength = lightsAmount*16;
 		

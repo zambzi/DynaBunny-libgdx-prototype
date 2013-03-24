@@ -2,6 +2,13 @@ package manifold.movable.dynabunny.shaders;
 
 import com.badlogic.gdx.Gdx;
 
+/**
+ * 
+ * @author zambzi
+ *
+ * Shader Loader
+ *
+ */
 public final class Shaders {
 	public String vertexShader;
 	public String fragmentShader;

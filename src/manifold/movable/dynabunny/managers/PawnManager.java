@@ -7,6 +7,14 @@ import manifold.movable.dynabunny.actors.Pawn;
 
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 
+/**
+ * 
+ * @author zambzi
+ *
+ * Creates, manages and destroys pawns
+ *
+ */
+
 public class PawnManager {
 	private Hashtable<String, Pawn> pawns;
 	ModelManager manager;

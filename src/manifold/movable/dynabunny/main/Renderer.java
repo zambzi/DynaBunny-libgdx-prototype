@@ -16,6 +16,14 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 
+/**
+ * 
+ * @author zambzi
+ *
+ * Main Render Class
+ *
+ */
+
 public class Renderer extends Game{
 	private PawnManager pawnManager;
 	private InputManager inputManager;

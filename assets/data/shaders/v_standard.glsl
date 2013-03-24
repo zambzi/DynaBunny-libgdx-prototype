@@ -1,3 +1,6 @@
+//BLINN_PHONG VERTEX SHADER
+//Zambzi
+
 attribute vec4 a_position;
 attribute vec3 a_normal;
 attribute vec2 a_texCoord0;
@@ -16,7 +19,6 @@ void main()
 	vec3 normal = a_normal;
 	
 	vec3 eyeVec = vec3(u_ProjectionMatrix*vec4(normal, 0.0));
-	//vec3 eyeVec = vec3(u_ModelViewMatrix*vec4(normal, 0.0));
 	eyeVec = eyeVec/length(eyeVec);
 	v_eyeVec = eyeVec;
 	

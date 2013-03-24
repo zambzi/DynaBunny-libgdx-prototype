@@ -3,6 +3,15 @@ package manifold.movable.dynabunny.managers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 
+/**
+ * 
+ * @author zambzi
+ *
+ * Main input Class
+ * Everything about smearing screen with greasy fingers goes here
+ *
+ */
+
 public class InputManager implements InputProcessor {
 	private float touchStartX;
 	private float touchStartY;

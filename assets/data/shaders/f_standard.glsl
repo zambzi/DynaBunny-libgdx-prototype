@@ -1,3 +1,6 @@
+//BLINN-PHONG FRAGMENT SHADER
+//Zambzi
+
 #ifdef GL_ES
 precision mediump float;
 #endif
@@ -9,7 +12,6 @@ uniform vec4 ambientColor[MAX_LIGHTS];
 uniform vec4 diffuseColor[MAX_LIGHTS];
 uniform vec4 specularColor[MAX_LIGHTS];
 uniform sampler2D u_texture;
-uniform int u_numLights;
 uniform vec3 u_camDirection;
 
 struct Material {

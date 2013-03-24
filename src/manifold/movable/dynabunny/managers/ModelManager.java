@@ -10,7 +10,13 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g3d.loaders.md2.MD2Loader;
 import com.badlogic.gdx.graphics.g3d.model.keyframe.KeyframedModel;
 
-//TODO: More optimal way to manage same models
+
+/**
+ * 
+ * @author zambzi
+ * class solely used to load up models and textures (only for models)
+ *
+ */
 public class ModelManager {
 	private Hashtable<String, KeyframedModel> models;
 	private Hashtable<String, Texture> textures;
