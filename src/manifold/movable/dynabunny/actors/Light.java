@@ -35,8 +35,8 @@ public class Light {
 	
 	public Light(float[] dir, PerspectiveCamera cam){
 		direction = dir;
-		ambientColor = new float[]{1.0f,1.0f,1.0f,0.5f};
-		diffuseColor = new float[]{1.0f,1.0f,1.0f,0.5f};
+		ambientColor = new float[]{.5f,.5f,.5f,1.0f};
+		diffuseColor = new float[]{.7f,.7f,.7f,1.0f};
 		specColor = new float[]{1.0f,1.0f,1.0f,1.0f};
 	}
 	

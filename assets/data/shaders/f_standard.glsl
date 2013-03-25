@@ -27,6 +27,8 @@ varying vec2 v_texCoord0;
 
 void main()
 {
+	vec4 texCol = texture2D(u_texture, v_texCoord0);
+	if(texCol.a < 0.5) discard; //walkaround for Depth Buffer vs Blending conflict. Only works for binary transparency!
 	vec3 viewDir = normalize(-u_camDirection);
 	vec4 ambientLight = vec4(0.0);
 	vec4 diffuseLight = vec4(0.0);
@@ -41,14 +43,13 @@ void main()
 		
 		ambientLight += ambientColor[i]*u_material.ambientFactor;
 		diffuseLight += diffValue * diffuseColor[i] * u_material.diffuseFactor;
-		if(specValue > 0.0){
+		if(specValue > 0.0 && u_material.shininess != 0){
 			specularLight += pow(specValue, u_material.shininess)*specularColor[i]*u_material.specularFactor;
 		}
 		++i;
 	}
 	
 	vec4 light = ambientLight+diffuseLight+specularLight;
-	vec4 texCol = texture2D(u_texture, v_texCoord0);
 	gl_FragColor = light*texCol;
 		
 }

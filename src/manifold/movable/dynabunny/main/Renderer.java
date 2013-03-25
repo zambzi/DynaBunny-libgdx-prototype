@@ -42,8 +42,9 @@ public class Renderer extends Game{
 		createShader(shaders.vertexShader, shaders.fragmentShader);
 		pawnManager = new PawnManager();
 		createPawns();
-		setLights(new LightManager(1,cam));
+		setLights(new LightManager(2,cam));
 		lights.getLight(0).setDirection(1,1,-1);
+		lights.getLight(1).setDirection(-1, 1, -1);
 		inputManager = new InputManager();
 	}
 
@@ -59,6 +60,7 @@ public class Renderer extends Game{
 		
 		//following is just screwing up with camera
 		cam.rotateAround(new Vector3(0,0,0), new Vector3(0,1,0), -inputManager.dragY);
+		//cam.rotateAround(new Vector3(0,0,0), new Vector3(1,0,0), -inputManager.dragX);
 		//Camera zoom-on-target functionality:
 		Vector3 vec = cam.position.cpy();
 		vec.nor();
@@ -70,17 +72,42 @@ public class Renderer extends Game{
 		standardShader.begin();
 		lights.bind(cam, standardShader);
 		//TODO: create batch draw for PawnManager with exclusion system
+		drawSolidObjects();
+		standardShader.end();
+		inputManager.resetValues();
+	}
+	
+	private void setGLStuff(){
+		GL20 gl = Gdx.graphics.getGL20();
+		gl.glClearDepthf(1.0f);
+		gl.glDepthFunc(GL20.GL_LEQUAL);
+		gl.glDepthMask(true);
+		gl.glDepthRangef(depthRangeMin, depthRangeMax);
+		gl.glClearColor(1,1,1,1);
+		gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		gl.glFrontFace(GL20.GL_CW);
+		gl.glEnable(GL20.GL_CULL_FACE);
+		gl.glCullFace(GL20.GL_BACK);
+		//gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+	}
+	
+	/**
+	 * put all solid, non-transparent or binary-transparent
+	 * objects to render here
+	 */
+	private void drawSolidObjects(){
+		GL20 gl = Gdx.graphics.getGL20();
+		gl.glEnable(GL20.GL_DEPTH_TEST);
 		pawnManager.getPawn("bunny").draw(cam, standardShader);
 		pawnManager.getPawn("bunny1").draw(cam, standardShader);
 		pawnManager.getPawn("bunny2").draw(cam, standardShader);
 		pawnManager.getPawn("bunny3").draw(cam, standardShader);
 		pawnManager.getPawn("bunny4").draw(cam, standardShader);
 		pawnManager.getPawn("bunny5").draw(cam, standardShader);
-		pawnManager.getPawn("bunny6").draw(cam, standardShader);
-		standardShader.end();
-		inputManager.resetValues();
+		pawnManager.getPawn("wall").draw(cam, standardShader);
+		gl.glDisable(GL20.GL_DEPTH_TEST);
 	}
-
+	
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
@@ -119,6 +146,7 @@ public class Renderer extends Game{
 		this.lights = lights;
 	}	
 	
+	//TODO: remove if level class is done
 	private void createPawns(){
 		try {
 			pawnManager.addPawn("bunny", "bunny2-small.md2", "bunny-warface.png", cam);
@@ -127,7 +155,7 @@ public class Renderer extends Game{
 			pawnManager.addPawn("bunny3", "bunny2-small.md2", "bunny.png", cam);
 			pawnManager.addPawn("bunny4", "bunny2-small.md2", "bunny.png", cam);
 			pawnManager.addPawn("bunny5", "bunny2-small.md2", "bunny.png", cam);
-			pawnManager.addPawn("bunny6", "test.md2", "bunny-warface.png", cam);
+			pawnManager.addPawn("wall", "wall-4.md2", "wall.png", cam);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -138,18 +166,19 @@ public class Renderer extends Game{
 		pawnManager.getPawn("bunny3").resize(0.5f);
 		pawnManager.getPawn("bunny4").resize(0.5f);
 		pawnManager.getPawn("bunny5").resize(0.5f);
-		pawnManager.getPawn("bunny6").resize(0.5f);
+		pawnManager.getPawn("wall").resize(0.5f);
 		pawnManager.getPawn("bunny1").setPosition(new Vector3(-25,0,25));
 		pawnManager.getPawn("bunny2").setPosition(new Vector3(-25,0,15));
 		pawnManager.getPawn("bunny3").setPosition(new Vector3(-25,0,5));
 		pawnManager.getPawn("bunny4").setPosition(new Vector3(-25,0,-5));
 		pawnManager.getPawn("bunny5").setPosition(new Vector3(-25,0,-15));
-		pawnManager.getPawn("bunny6").setPosition(new Vector3(-25,0,-25));
+		pawnManager.getPawn("bunny").setPosition(new Vector3(-25,0,-25));
 		
-		pawnManager.getPawn("bunny").setAmbientFactor(.1f,.1f,.1f,.1f);
-		pawnManager.getPawn("bunny").setDiffuseFactor(.3f,.3f,.3f,.3f);
+		pawnManager.getPawn("bunny").setAmbientFactor(.1f,.1f,.1f,1f);
+		pawnManager.getPawn("bunny").setDiffuseFactor(.3f,.3f,.3f,1f);
 		pawnManager.getPawn("bunny").setSpecularFactor(1,1,1,1);
-		pawnManager.getPawn("bunny").setShininess(25);
+		pawnManager.getPawn("bunny").setShininess(70);
+		pawnManager.getPawn("wall").setShininess(0);
 		
 		pawnManager.getPawn("bunny").animate("walkCycle", true);
 		pawnManager.getPawn("bunny1").animate("idle1", true);
@@ -157,21 +186,6 @@ public class Renderer extends Game{
 		pawnManager.getPawn("bunny3").animate("shake", true);
 		pawnManager.getPawn("bunny4").animate("dodge", true);
 		pawnManager.getPawn("bunny5").animate("idle1", true);
-		pawnManager.getPawn("bunny6").animate("walkCycle", true);
-	}
-	
-	private void setGLStuff(){
-		GL20 gl = Gdx.graphics.getGL20();
-		gl.glEnable(GL20.GL_DEPTH_TEST);
-		gl.glClearDepthf(1.0f);
-		gl.glDepthFunc(GL20.GL_LEQUAL);
-		gl.glDepthMask(true);
-		gl.glDepthRangef(depthRangeMin, depthRangeMax);
-		gl.glClearColor(1,1,1,1);
-		gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		gl.glFrontFace(GL20.GL_CW);
-		gl.glEnable(GL20.GL_CULL_FACE);
-		gl.glCullFace(GL20.GL_BACK);
 	}
 
 	

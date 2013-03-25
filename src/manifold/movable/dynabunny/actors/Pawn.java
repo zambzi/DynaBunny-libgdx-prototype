@@ -51,10 +51,10 @@ public class Pawn{
     	private boolean animLoop = false;
     	
     	//material values
-    	private float[] ambientFactor = new float[]{0.1f,0.1f,0.1f,0.1f};
-    	private float[] diffuseFactor = new float[]{0.7f,0.7f,0.7f,0.7f};
-    	private float[] specularFactor = new float[]{0.9f,0.9f,0.9f,0.9f};
-    	private float shininess = 10f;
+    	private float[] ambientFactor = new float[]{0.1f,0.1f,0.1f,1f};
+    	private float[] diffuseFactor = new float[]{0.7f,0.7f,0.7f,1f};
+    	private float[] specularFactor = new float[]{0.9f,0.9f,0.9f,1f};
+    	private float shininess = 0f;
     	
         
         public Pawn(String modelHandle, String textureHandle, Matrix4 combinedMatrix, ModelManager manager) throws FileNotFoundException{
@@ -142,6 +142,7 @@ public class Pawn{
         
         /**
          * Values are given in range 0..1
+         * WARNING - alpha value affects material alpha, not color alpha!
          */
         public void setAmbientFactor(float r, float g, float b, float a){
         	ambientFactor[0] = r;
@@ -152,6 +153,7 @@ public class Pawn{
         
         /**
          * Values are given in range 0..1
+         * WARNING - alpha value affects material alpha, not color alpha!
          */
         public void setDiffuseFactor(float r, float g, float b, float a){
         	diffuseFactor[0] = r;
@@ -162,6 +164,7 @@ public class Pawn{
         
         /**
          * Values are given in range 0..1
+         * WARNING - alpha value affects material alpha, not color alpha!
          */
         public void setSpecularFactor(float r, float g, float b, float a){
         	specularFactor[0] = r;
@@ -172,9 +175,14 @@ public class Pawn{
         
         /**
          * Values are given in range 0..n
+         * 0 - no shine
+         * less than 5 - weird effects
+         * around 10 - very subtle shine
+         * 20-50 - metal like shine
+         * 50-100 - shiny plastic
          */
-        public void setShininess(float a){
-        	shininess = a;
+        public void setShininess(float shine){
+        	shininess = shine;
         }
         
         public KeyframedModel getModel(){

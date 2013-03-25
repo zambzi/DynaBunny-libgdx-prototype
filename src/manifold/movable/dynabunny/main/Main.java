@@ -11,6 +11,8 @@ public class Main extends AndroidApplication {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+		config.a = 8;
+		config.r = config.b = config.g = 8;
 		config.useGL20 = true;
 		initialize(new Renderer(), config);
 	}
