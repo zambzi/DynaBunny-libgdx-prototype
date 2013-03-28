@@ -2,10 +2,14 @@ package manifold.movable.dynabunny.managers;
 
 import java.io.FileNotFoundException;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import manifold.movable.dynabunny.actors.Pawn;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 /**
  * 
@@ -42,6 +46,28 @@ public class PawnManager {
 	 */
 	public void addTexture(String handle) throws FileNotFoundException{
 		manager.addTexture(handle);
+	}
+	
+
+	public void batchDraw(PerspectiveCamera cam, ShaderProgram shader){
+		GL20 gl = Gdx.graphics.getGL20();
+		gl.glEnable(GL20.GL_DEPTH_TEST);
+		Iterator<Pawn> itr = pawns.values().iterator();
+		while(itr.hasNext()){
+			itr.next().draw(cam, shader);
+		}
+		gl.glDisable(GL20.GL_DEPTH_TEST);
+	}
+	
+
+	public void batchShadows(PerspectiveCamera cam, ShaderProgram shader, LightManager lights, boolean genShadows){
+		GL20 gl = Gdx.graphics.getGL20();
+		gl.glEnable(GL20.GL_DEPTH_TEST);
+		Iterator<Pawn> itr = pawns.values().iterator();
+		while(itr.hasNext()){
+			itr.next().drawShadows(cam, shader, lights, genShadows);
+		}
+		gl.glDisable(GL20.GL_DEPTH_TEST);
 	}
 	
 	/**

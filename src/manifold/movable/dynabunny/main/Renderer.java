@@ -28,10 +28,7 @@ public class Renderer extends Game{
 	private PawnManager pawnManager;
 	private InputManager inputManager;
 	private PerspectiveCamera cam;
-	private ShaderProgram standardShader;
-	private ShaderProgram shadowGen;
-	private ShaderProgram shadowMap;
-	private Shaders shaders;
+	private ShaderRenderer shaderRenderer;
 	private LightManager lights = null;
 	private float depthRangeMin = 0.0f;
 	private float depthRangeMax = 2.0f;
@@ -41,11 +38,11 @@ public class Renderer extends Game{
 	public void create() {
 		createCamera();
 		pawnManager = new PawnManager();
-		createShaders();
 		createPawns();
 		setLights(new LightManager(1,cam));
 		lights.getLight(0).setDirection(0,0,-1);
 		inputManager = new InputManager();
+		shaderRenderer = new ShaderRenderer(lights, pawnManager, cam);
 	}
 
 	@Override
@@ -56,6 +53,7 @@ public class Renderer extends Game{
 
 	@Override
 	public void render() {
+		GL20 gl = Gdx.graphics.getGL20();
 		setGLStuff();
 		//following is just screwing up with camera
 		cam.rotateAround(new Vector3(0,0,0), new Vector3(0,1,0), -inputManager.dragY);
@@ -69,27 +67,8 @@ public class Renderer extends Game{
 		lights.getLight(0).rotate(1, new Vector3(1,0,0));
 		
 		cam.update();
-		GL20 gl = Gdx.graphics.getGL20();
 		
-		standardShader.begin();
-		lights.bind(cam, standardShader);
-		drawSolidObjects(standardShader);
-		standardShader.end();
-		/*
-		lights.shadowBuffer.begin();
-		gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		shadowGen.begin();
-		drawShadows(shadowGen,true);
-		shadowGen.end();
-		lights.shadowBuffer.end();
-		gl.glDisable(GL20.GL_CULL_FACE);
-		
-		shadowMap.begin();
-		lights.shadowBuffer.getColorBufferTexture().bind();
-		shadowMap.setUniformi("s_shadowMap",lights.shadowBuffer.getColorBufferTexture().getTextureObjectHandle());
-		drawShadows(shadowMap, false);
-		shadowMap.end();
-		*/
+		shaderRenderer.render();
 		inputManager.resetValues();
 	}
 	
@@ -107,25 +86,6 @@ public class Renderer extends Game{
 		//gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 	}
 	
-	/**
-	 * put all solid, non-transparent or binary-transparent
-	 * objects to render here
-	 */
-	private void drawSolidObjects(ShaderProgram shader){
-		GL20 gl = Gdx.graphics.getGL20();
-		gl.glEnable(GL20.GL_DEPTH_TEST);
-		pawnManager.getPawn("bunny").draw(cam, shader);
-		pawnManager.getPawn("wall").draw(cam, shader);
-		gl.glDisable(GL20.GL_DEPTH_TEST);
-	}
-	
-	private void drawShadows(ShaderProgram shader, boolean genShadows){
-		GL20 gl = Gdx.graphics.getGL20();
-		gl.glEnable(GL20.GL_DEPTH_TEST);
-		pawnManager.getPawn("bunny").drawShadows(cam, shader, lights, genShadows);
-		pawnManager.getPawn("wall").drawShadows(cam, shader, lights, genShadows);
-		gl.glDisable(GL20.GL_DEPTH_TEST);
-	}
 	
 	@Override
 	public void pause() {
@@ -141,7 +101,7 @@ public class Renderer extends Game{
 
 	@Override
 	public void dispose() {
-		standardShader.dispose();
+		shaderRenderer.dispose();
 		pawnManager.destroyAll();
 	}
 	
@@ -151,18 +111,6 @@ public class Renderer extends Game{
 		cam.direction.set(-1,-1,-1);
 	}
 	
-	private void createShaders(){
-		shaders = new Shaders();
-		standardShader = new ShaderProgram(shaders.vPhongBlinn, shaders.fPhongBlinn);
-		shadowGen = new ShaderProgram(shaders.vShadowGen, shaders.fShadowGen);
-		shadowMap = new ShaderProgram(shaders.vShadowMap, shaders.fShadowMap);
-		if (!standardShader.isCompiled())
-			throw new IllegalStateException(standardShader.getLog());
-		if (!shadowMap.isCompiled())
-			throw new IllegalStateException(shadowMap.getLog());
-		if (!shadowGen.isCompiled())
-			throw new IllegalStateException(shadowGen.getLog());
-	}
 	
 	/**
 	 * use to add new light scheme to renderer
