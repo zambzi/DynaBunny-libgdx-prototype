@@ -1,5 +1,6 @@
 package manifold.movable.dynabunny.actors;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 
@@ -17,6 +18,7 @@ public class Light {
 	public float[] ambientColor = new float[4];
 	public float[] diffuseColor = new float[4];
 	public float[] specColor = new float[4];
+	public OrthographicCamera lightView;
 	
 	/**
 	 * Values are given in range: 0..1

@@ -2,7 +2,10 @@ package manifold.movable.dynabunny.actors;
 
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
+import manifold.movable.dynabunny.managers.LightManager;
 import manifold.movable.dynabunny.managers.ModelManager;
 
 import com.badlogic.gdx.Gdx;
@@ -43,6 +46,8 @@ public class Pawn{
     	private Material material;
     	private Matrix4 transform = new Matrix4(); //for mesh
     	private Matrix4 transProjection = new Matrix4(); //for light effects
+    	//private Matrix4 lightView = new Matrix4(); //for shadows
+    	private List<Matrix4> lightView;
     	private Vector3 position = new Vector3(0,0,0);
     	private float angle = 0;
     	private Vector3 axis = new Vector3(0,0,0);
@@ -64,7 +69,7 @@ public class Pawn{
 			createModel();
         	createMaterial();
         	transform.set(combinedMatrix);
-        	
+        	lightView = new ArrayList<Matrix4>();
         }
         
         private void createModel() throws FileNotFoundException{
@@ -86,13 +91,28 @@ public class Pawn{
         public void draw(PerspectiveCamera cam, ShaderProgram meshShader){
         	if(model == null)
         		throw new IllegalStateException("draw called before a mesh has been created");
-        	resetTexture();
+        	
         	if(animationName!="still")animation();
         	transformMatrix(cam);
-    		manager.getTexture(texture).bind();
+        	meshShader.setUniformMatrix("u_ModelViewMatrix", transform, false);
+        	resetTexture();
+        	manager.getTexture(texture).bind();
         	setUniforms(meshShader);
         	material.bind(meshShader);
         	manager.getModel(model).render(meshShader);
+        }
+        
+        public void drawShadows(PerspectiveCamera cam, ShaderProgram meshShader, LightManager lights, boolean genShadows){
+        	if(model == null)
+        		throw new IllegalStateException("draw called before a mesh has been created");
+        	
+        	if(animationName!="still")animation();
+        	transformLights(lights.getLights());
+        	transformMatrix(cam);
+        	if(!genShadows)meshShader.setUniformMatrix("u_ModelViewMatrix", transform, false);
+        	meshShader.setUniformMatrix("u_lightView", lightView.get(0), false);//TODO: change to multiple lights
+        	
+        	manager.getModel(model).subMeshes[0].getMesh().render(meshShader,4);
         }
         
         private void setUniforms(ShaderProgram meshShader){
@@ -113,9 +133,11 @@ public class Pawn{
     								specularFactor[3]	);
     		meshShader.setUniformf(	meshShader.getUniformLocation("u_material.shininess"),
     								shininess	);
-    		meshShader.setUniformMatrix("u_ModelViewMatrix", transform, false);
+    		
     		meshShader.setUniformMatrix("u_ProjectionMatrix", transProjection, false);
         }
+        
+
         
         private void animation(){//TODO: przerobic na poprawna klase animacji
         	animTime += Gdx.graphics.getDeltaTime();
@@ -201,6 +223,16 @@ public class Pawn{
         	transProjection.rotate(axis.z, axis.x, axis.y, angle);
         	transform.scale(scale.x, scale.y, scale.z);
         	transProjection.scale(scale.z, scale.x, scale.y);
+        }
+        
+        private void transformLights(Light[] lights){
+        	lightView.clear();
+        	for(int i=0; i<lights.length; ++i){
+        		lightView.add(lights[i].lightView.combined.cpy());
+        		/*lightView.get(i).translate(position);
+        		lightView.get(i).scale(scale.x, scale.y, scale.z);
+        		lightView.get(i).rotate(axis.z, axis.x, axis.y, angle);*/
+        	}
         }
         
         /**

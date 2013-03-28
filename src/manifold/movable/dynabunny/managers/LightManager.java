@@ -7,7 +7,10 @@ import manifold.movable.dynabunny.actors.Light;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.BufferUtils;
 
@@ -23,12 +26,15 @@ import com.badlogic.gdx.utils.BufferUtils;
 public class LightManager {
 	private Light[] lights;
 	private int lightsAmount;
+	public FrameBuffer shadowBuffer;
 	
 	public LightManager(int lightsAmount, PerspectiveCamera cam){
 		this.lightsAmount = lightsAmount;
 		lights = new Light[lightsAmount];
+		shadowBuffer = new FrameBuffer(Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 		for(int i=0; i<lightsAmount; ++i){
 			lights[i] = new Light(new float[]{0,0,-1}, cam);
+			setLightViews(lights[i]);
 		}
 	}
 	
@@ -55,6 +61,10 @@ public class LightManager {
 	}
 	
 	public void bind(PerspectiveCamera cam, ShaderProgram shader){
+		for(int i=0; i<lightsAmount; ++i){
+			lights[i].lightView.lookAt(lights[i].direction[0], lights[i].direction[1], lights[i].direction[2]);
+			lights[i].lightView.update();
+		}
 		shader.setUniformf(shader.getUniformLocation("u_camDirection"), cam.direction);
 		int bufferLength = lightsAmount*16;
 		
@@ -79,6 +89,14 @@ public class LightManager {
 
 	}
 	
+	private void setLightViews(Light light){
+		light.lightView = new OrthographicCamera(shadowBuffer.getWidth(), shadowBuffer.getHeight());
+		light.lightView.lookAt(light.direction[0], light.direction[1], light.direction[2]);
+
+		light.lightView.update();
+		
+	}
+	
 	private void fillAndPassBuffer(int type, int lightsAmount, int location, FloatBuffer buffer, int vecType){
 		for(int i=0; i<lightsAmount; ++i){
 			switch(type){
@@ -99,6 +117,10 @@ public class LightManager {
 	
 	public Light getLight(int index){
 		return lights[index];
+	}
+	
+	public Light[] getLights(){
+		return lights;
 	}
 	
 }

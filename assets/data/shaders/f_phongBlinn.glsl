@@ -43,7 +43,7 @@ void main()
 		
 		ambientLight += ambientColor[i]*u_material.ambientFactor;
 		diffuseLight += diffValue * diffuseColor[i] * u_material.diffuseFactor;
-		if(specValue > 0.0 && u_material.shininess != 0){
+		if(specValue > 0.0 && u_material.shininess != 0.0){
 			specularLight += pow(specValue, u_material.shininess)*specularColor[i]*u_material.specularFactor;
 		}
 		++i;
