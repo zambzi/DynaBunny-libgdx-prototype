@@ -30,8 +30,8 @@ public class Renderer extends Game{
 	private PerspectiveCamera cam;
 	private ShaderRenderer shaderRenderer;
 	private LightManager lights = null;
-	private float depthRangeMin = 0.0f;
-	private float depthRangeMax = 2.0f;
+	private float depthRangeMin = 0.1f;
+	private float depthRangeMax = 1.0f;
 	
 	
 	@Override
@@ -40,9 +40,9 @@ public class Renderer extends Game{
 		pawnManager = new PawnManager();
 		createPawns();
 		setLights(new LightManager(1,cam));
+		shaderRenderer = new ShaderRenderer(lights, pawnManager, cam);
 		lights.getLight(0).setDirection(0,0,-1);
 		inputManager = new InputManager();
-		shaderRenderer = new ShaderRenderer(lights, pawnManager, cam);
 	}
 
 	@Override
@@ -67,17 +67,17 @@ public class Renderer extends Game{
 		lights.getLight(0).rotate(1, new Vector3(1,0,0));
 		
 		cam.update();
-		
+		pawnManager.animatePawns();
 		shaderRenderer.render();
 		inputManager.resetValues();
 	}
 	
 	private void setGLStuff(){
 		GL20 gl = Gdx.graphics.getGL20();
-		gl.glClearDepthf(1.0f);
-		gl.glDepthFunc(GL20.GL_LEQUAL);
-		gl.glDepthMask(true);
-		gl.glDepthRangef(depthRangeMin, depthRangeMax);
+		//gl.glClearDepthf(1.0f);
+		//gl.glDepthFunc(GL20.GL_LESS);
+		//gl.glDepthMask(true);
+		//gl.glDepthRangef(depthRangeMin, depthRangeMax);
 		gl.glClearColor(.8f,.8f,.8f,1);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		gl.glFrontFace(GL20.GL_CW);
@@ -131,7 +131,7 @@ public class Renderer extends Game{
 		}
 		pawnManager.getPawn("bunny").resize(0.3f);
 		pawnManager.getPawn("wall").setPosition(new Vector3(0,-20,0));
-		pawnManager.getPawn("bunny").setPosition(new Vector3(0,0,5));
+		pawnManager.getPawn("bunny").setPosition(new Vector3(0,0,0));
 		pawnManager.getPawn("bunny").animate("walkCycle", true);
 	}
 

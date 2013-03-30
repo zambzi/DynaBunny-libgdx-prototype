@@ -52,8 +52,9 @@ public class Pawn{
     	private float angle = 0;
     	private Vector3 axis = new Vector3(0,0,0);
     	private Vector3 scale = new Vector3(1,1,1);
-    	private String animationName = "still";
+    	public String animationName = "still";
     	private boolean animLoop = false;
+    	private boolean isRenderable = true; //TODO: add exclusion functionality
     	
     	//material values
     	private float[] ambientFactor = new float[]{0.1f,0.1f,0.1f,1f};
@@ -92,7 +93,6 @@ public class Pawn{
         	if(model == null)
         		throw new IllegalStateException("draw called before a mesh has been created");
         	
-        	if(animationName!="still")animation();
         	transformMatrix(cam);
         	meshShader.setUniformMatrix("u_ModelViewMatrix", transform, false);
         	resetTexture();
@@ -106,13 +106,11 @@ public class Pawn{
         	if(model == null)
         		throw new IllegalStateException("draw called before a mesh has been created");
         	
-        	if(animationName!="still")animation();
         	transformLights(lights.getLights());
         	transformMatrix(cam);
         	if(!genShadows)meshShader.setUniformMatrix("u_ModelViewMatrix", transform, false);
         	meshShader.setUniformMatrix("u_lightView", lightView.get(0), false);//TODO: change to multiple lights
-        	
-        	manager.getModel(model).subMeshes[0].getMesh().render(meshShader,4);
+        	manager.getModel(model).render(meshShader);
         }
         
         private void setUniforms(ShaderProgram meshShader){
@@ -139,7 +137,7 @@ public class Pawn{
         
 
         
-        private void animation(){//TODO: przerobic na poprawna klase animacji
+        public void animation(){
         	animTime += Gdx.graphics.getDeltaTime();
     		if (animTime >= manager.getModel(model).getAnimation(animationName).totalDuration) {
     			animTime = 0;
@@ -228,10 +226,10 @@ public class Pawn{
         private void transformLights(Light[] lights){
         	lightView.clear();
         	for(int i=0; i<lights.length; ++i){
-        		lightView.add(lights[i].lightView.combined.cpy());
-        		/*lightView.get(i).translate(position);
+        		lightView.add(new Matrix4(lights[i].lightView.combined));
+        		lightView.get(i).translate(position);
         		lightView.get(i).scale(scale.x, scale.y, scale.z);
-        		lightView.get(i).rotate(axis.z, axis.x, axis.y, angle);*/
+        		lightView.get(i).rotate(axis.z, axis.x, axis.y, angle);
         	}
         }
         

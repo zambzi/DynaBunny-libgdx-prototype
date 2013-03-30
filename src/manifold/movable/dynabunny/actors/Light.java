@@ -18,8 +18,8 @@ public class Light {
 	public float[] ambientColor = new float[4];
 	public float[] diffuseColor = new float[4];
 	public float[] specColor = new float[4];
-	public OrthographicCamera lightView;
-	
+	public OrthographicCamera lightView1;
+	public PerspectiveCamera lightView;
 	/**
 	 * Values are given in range: 0..1
 	 * @param dir - light direction, float[3]
@@ -60,8 +60,11 @@ public class Light {
 	public void rotate(float angle, Vector3 axis){
 		Vector3 dir = new Vector3(direction[0], direction[1], direction[2]);
 		dir.rotate(axis, angle);
+		lightView.lookAt(dir.x, dir.y, dir.z);
+		lightView.rotateAround(lightView.direction, axis, angle);
 		direction[0] = dir.x;
 		direction[1] = dir.y;
 		direction[2] = dir.z;
+		lightView.update();
 	}
 }

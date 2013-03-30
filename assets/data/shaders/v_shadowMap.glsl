@@ -3,6 +3,9 @@ precision highp float;
 #endif
 
 attribute vec3 a_position;
+attribute vec2 a_texCoord0;
+
+varying vec2 v_texCoord0;
 
 uniform mat4 u_ModelViewMatrix;
 uniform mat4 u_lightView;
@@ -14,4 +17,5 @@ void main(void)
 { 
 	gl_Position = u_ModelViewMatrix * vec4(a_position,1.0) ;
 	v_lightSpacePosition  = u_lightView * vec4(a_position,1.0) ;
+	v_texCoord0 = a_texCoord0;
 }

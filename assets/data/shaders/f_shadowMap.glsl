@@ -3,8 +3,10 @@ precision highp float;
 #endif
 
 varying vec4 v_lightSpacePosition;
+varying vec2 v_texCoord0;
 
 uniform sampler2D s_shadowMap;
+uniform sampler2D u_texture;
 
 float unpack(vec4 packedZValue)
 {	
@@ -21,9 +23,12 @@ float getShadowFactor(vec4 lightZ)
 
 void main(void) 
 {	
+	vec4 texCol = texture2D(u_texture, v_texCoord0);
+	if(texCol.a < 0.5) discard;
 	float shadowFactor=1.0;				
 	vec4 lightZ = v_lightSpacePosition / v_lightSpacePosition.w;
 	lightZ = (lightZ + 1.0) / 2.0;
-	shadowFactor = getShadowFactor(lightZ);	
+	shadowFactor = getShadowFactor(lightZ);
+
 	gl_FragColor = vec4(0.7,0.0,0.0,1.0)*shadowFactor;
 }

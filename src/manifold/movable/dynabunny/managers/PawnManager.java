@@ -50,24 +50,18 @@ public class PawnManager {
 	
 
 	public void batchDraw(PerspectiveCamera cam, ShaderProgram shader){
-		GL20 gl = Gdx.graphics.getGL20();
-		gl.glEnable(GL20.GL_DEPTH_TEST);
 		Iterator<Pawn> itr = pawns.values().iterator();
 		while(itr.hasNext()){
 			itr.next().draw(cam, shader);
 		}
-		gl.glDisable(GL20.GL_DEPTH_TEST);
 	}
 	
 
 	public void batchShadows(PerspectiveCamera cam, ShaderProgram shader, LightManager lights, boolean genShadows){
-		GL20 gl = Gdx.graphics.getGL20();
-		gl.glEnable(GL20.GL_DEPTH_TEST);
 		Iterator<Pawn> itr = pawns.values().iterator();
 		while(itr.hasNext()){
 			itr.next().drawShadows(cam, shader, lights, genShadows);
 		}
-		gl.glDisable(GL20.GL_DEPTH_TEST);
 	}
 	
 	/**
@@ -99,5 +93,13 @@ public class PawnManager {
 	
 	public Pawn getPawn(String key){
 		return pawns.get(key);
+	}
+	
+	public void animatePawns(){
+		Iterator<Pawn> itr = pawns.values().iterator();
+		while(itr.hasNext()){
+			Pawn pawn = itr.next();
+			if(pawn.animationName!="still") pawn.animation();
+		}
 	}
 }
