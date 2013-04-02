@@ -30,8 +30,6 @@ public class Renderer extends Game{
 	private PerspectiveCamera cam;
 	private ShaderRenderer shaderRenderer;
 	private LightManager lights = null;
-	private float depthRangeMin = 0.1f;
-	private float depthRangeMax = 1.0f;
 	
 	
 	@Override
@@ -41,7 +39,8 @@ public class Renderer extends Game{
 		createPawns();
 		setLights(new LightManager(1,cam));
 		shaderRenderer = new ShaderRenderer(lights, pawnManager, cam);
-		lights.getLight(0).setDirection(0,0,-1);
+		lights.getLight(0).setDirection(0,-1,-1);		
+		lights.setupLight(0, new float[]{-1.0f,-1.0f,-1.0f},new float[]{.5f,.5f,.5f,1.0f},new float[]{.7f,.7f,.7f,1.0f},new float[]{1.0f,1.0f,1.0f,1.0f});
 		inputManager = new InputManager();
 	}
 
@@ -53,8 +52,6 @@ public class Renderer extends Game{
 
 	@Override
 	public void render() {
-		GL20 gl = Gdx.graphics.getGL20();
-		setGLStuff();
 		//following is just screwing up with camera
 		cam.rotateAround(new Vector3(0,0,0), new Vector3(0,1,0), -inputManager.dragY);
 		//cam.rotateAround(new Vector3(0,0,0), new Vector3(1,0,0), -inputManager.dragX);
@@ -64,26 +61,12 @@ public class Renderer extends Game{
 		vec.mul((float)inputManager.dragX/10);
 		cam.translate(vec);
 		lights.getLight(0).rotate(1, new Vector3(0,1,0));
-		lights.getLight(0).rotate(1, new Vector3(1,0,0));
+		//lights.getLight(0).rotate(1, new Vector3(1,0,0));
 		
 		cam.update();
 		pawnManager.animatePawns();
 		shaderRenderer.render();
 		inputManager.resetValues();
-	}
-	
-	private void setGLStuff(){
-		GL20 gl = Gdx.graphics.getGL20();
-		//gl.glClearDepthf(1.0f);
-		//gl.glDepthFunc(GL20.GL_LESS);
-		//gl.glDepthMask(true);
-		//gl.glDepthRangef(depthRangeMin, depthRangeMax);
-		gl.glClearColor(.8f,.8f,.8f,1);
-		gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		gl.glFrontFace(GL20.GL_CW);
-		gl.glEnable(GL20.GL_CULL_FACE);
-		gl.glCullFace(GL20.GL_BACK);
-		//gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 	}
 	
 	
@@ -129,6 +112,9 @@ public class Renderer extends Game{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		pawnManager.getPawn("bunny").setAmbientFactor(.5f, .5f, .5f, 1f);
+		pawnManager.getPawn("wall").setAmbientFactor(.5f, .5f, .5f, 1f);
 		pawnManager.getPawn("bunny").resize(0.3f);
 		pawnManager.getPawn("wall").setPosition(new Vector3(0,-20,0));
 		pawnManager.getPawn("bunny").setPosition(new Vector3(0,0,0));

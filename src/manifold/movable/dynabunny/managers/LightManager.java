@@ -31,7 +31,7 @@ public class LightManager {
 	
 	public LightManager(int lightsAmount, PerspectiveCamera cam){
 		this.lightsAmount = lightsAmount;
-		lights = new Light[lightsAmount];		
+		lights = new Light[lightsAmount];
 	}
 	
 	public void setupLight(	int lightIndex, 
@@ -49,6 +49,12 @@ public class LightManager {
 		lights[lightIndex].setDirection(dir[0], dir[1], dir[2]);
 		lights[lightIndex].setAmbientColor(color[0]/3, color[1]/3, color[2]/3, color[3]/3);
 		lights[lightIndex].setDiffuseColor(color[0]/2, color[1]/2, color[2]/2, color[3]/2);
+		lights[lightIndex].setSpecularColor(color[0], color[1], color[2], color[3]);
+	}
+	
+	public void setupLight(int lightIndex, float color[]){
+		lights[lightIndex].setAmbientColor(color[0]/2f, color[1]/2f, color[2]/2f, color[3]/2f);
+		lights[lightIndex].setDiffuseColor(color[0]/1.5f, color[1]/1.5f, color[2]/1.5f, color[3]/1.5f);
 		lights[lightIndex].setSpecularColor(color[0], color[1], color[2], color[3]);
 	}
 	
@@ -112,19 +118,16 @@ public class LightManager {
 	public void setShadowBuffer(FrameBuffer shadowBuffer, PerspectiveCamera cam){
 		this.shadowBuffer = shadowBuffer;
 		for(int i=0; i<lightsAmount; ++i){
-			lights[i] = new Light(new float[]{0,0,-1}, cam);
+			lights[i] = new Light();
 			setLightViews(lights[i]);
 		}
 	}
 	
 	private void setLightViews(Light light){
-		light.lightView = new PerspectiveCamera(45,shadowBuffer.getWidth(), shadowBuffer.getHeight());
-		//light.lightView = new OrthographicCamera(shadowBuffer.getWidth(), shadowBuffer.getHeight());
-		//light.lightView.zoom = 0.1f;
-		light.lightView.position.set(light.lightView.direction.scale(-50, -50, -50));
-		
-		light.lightView.lookAt(light.direction[0], light.direction[1], light.direction[2]);
-		light.lightView.update();
+		//light.lightView = new PerspectiveCamera(45,shadowBuffer.getWidth(), shadowBuffer.getHeight());
+		light.lightView = new OrthographicCamera(shadowBuffer.getWidth(), shadowBuffer.getHeight());
+		light.lightView.zoom = 0.2f;
+		light.setupLightView();
 		
 	}
 	

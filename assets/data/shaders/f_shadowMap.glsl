@@ -10,7 +10,8 @@ uniform sampler2D u_texture;
 
 float unpack(vec4 packedZValue)
 {	
-	const vec4 unpackFactors = vec4( 1.0 / (256.0 * 256.0 * 256.0), 1.0 / (256.0 * 256.0), 1.0 / 256.0, 1.0 );
+	//const vec4 unpackFactors = vec4( 1.0 / (256.0 * 256.0 * 256.0), 1.0 / (256.0 * 256.0), 1.0 / 256.0, 1.0 );
+	const vec4 unpackFactors = vec4(0.00000006, 0.000015259, 0.00390625, 1);
 	return dot(packedZValue,unpackFactors);
 }
 
@@ -24,8 +25,8 @@ float getShadowFactor(vec4 lightZ)
 void main(void) 
 {	
 	vec4 texCol = texture2D(u_texture, v_texCoord0);
-	if(texCol.a < 0.5) discard;
 	float shadowFactor=1.0;				
+	if(texCol.a < 0.5) discard;
 	vec4 lightZ = v_lightSpacePosition / v_lightSpacePosition.w;
 	lightZ = (lightZ + 1.0) / 2.0;
 	shadowFactor = getShadowFactor(lightZ);
