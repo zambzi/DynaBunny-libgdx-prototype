@@ -108,7 +108,12 @@ public class Pawn{
         	
         	transformLights(lights.getLights());
         	transformMatrix(cam);
-        	if(!genShadows)meshShader.setUniformMatrix("u_ModelViewMatrix", transform, false);
+        	if(!genShadows){
+        		meshShader.setUniformMatrix("u_ModelViewMatrix", transform, false);
+        		resetTexture();
+            	setUniforms(meshShader);
+            	material.bind(meshShader);
+        	}
         	meshShader.setUniformMatrix("u_lightView", lightView.get(0), false);//TODO: change to multiple lights
         	manager.getModel(model).render(meshShader);
         }

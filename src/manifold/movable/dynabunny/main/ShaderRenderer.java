@@ -74,13 +74,14 @@ public class ShaderRenderer {
 			shadowMapSP.begin();
 				shadowMapBuffer.getColorBufferTexture().bind(5);
 				shadowMapSP.setUniformi("s_shadowMap",5);
+				lights.bind(cam, phongBlinnSP);
 				pawns.batchShadows(cam, shadowMapSP, lights, false);
 			shadowMapSP.end();
 		//shadowBuffer.end();
 		
 		/*phongBlinnSP.begin();
 			shadowBuffer
-			lights.bind(cam, phongBlinnSP);
+			
 			pawns.batchDraw(cam, phongBlinnSP);
 		phongBlinnSP.end();
 	*/	
