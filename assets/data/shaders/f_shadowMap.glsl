@@ -85,7 +85,7 @@ void main(void)
 	if(texCol.a < 0.5) discard;
 	float shadow = 1.0;
 	shadow = addShadows();
-	if(shadow==0) shadow+=0.4;
+	if(shadow==0.0) shadow+=0.4;
 
 	gl_FragColor = texCol*shadow*addPhongBlinn();
 }
