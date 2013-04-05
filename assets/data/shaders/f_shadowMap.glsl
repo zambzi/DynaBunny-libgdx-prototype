@@ -7,14 +7,16 @@ precision highp float;
 varying vec4 v_lightSpacePosition;
 varying vec2 v_texCoord0;
 varying vec3 v_eyeVec;
+varying mat4 v_ModelViewMatrix;
 
 uniform sampler2D s_shadowMap;
 uniform sampler2D u_texture;
-uniform vec3 direction[MAX_LIGHTS];
+uniform vec4 direction[MAX_LIGHTS];
 uniform vec4 ambientColor[MAX_LIGHTS];
 uniform vec4 diffuseColor[MAX_LIGHTS];
 uniform vec4 specularColor[MAX_LIGHTS];
 uniform vec3 u_camDirection;
+uniform mat4 u_worldMatrix;
 
 struct Material {
 	vec4 ambientFactor;
@@ -47,7 +49,7 @@ float addShadows()
 	return shadowFactor;
 }
 
-vec4 addPhongBlinn()
+vec4 addPhongBlinn(float shadow)
 {
 	vec3 viewDir = normalize(-u_camDirection);
 	vec4 ambientLight = vec4(0.0);
@@ -56,9 +58,11 @@ vec4 addPhongBlinn()
 	
 	int i = 0;
 	while(i<MAX_LIGHTS){
+		vec4 dir = u_worldMatrix * direction[i];
 		
-		float diffValue = max(0.0, dot(v_eyeVec, direction[i]));
-		vec3 halfVector = normalize(direction[i] + viewDir);
+		
+		float diffValue = max(0.0, dot(v_eyeVec, dir.xyz));
+		vec3 halfVector = normalize(dir.xyz + viewDir);
 		float specValue = max(0.0, dot(v_eyeVec, halfVector));
 		
 		ambientLight += ambientColor[i]*u_material.ambientFactor;
@@ -68,8 +72,9 @@ vec4 addPhongBlinn()
 		}
 		++i;
 	}
-	
-	vec4 light = ambientLight+diffuseLight+specularLight;
+	shadow +=1.0;
+	vec4 light = (shadow==0.0 ? ambientLight: ambientLight+diffuseLight+specularLight);
+	//vec4 light = (ambientLight+diffuseLight+specularLight)*shadowColor;
 	return light;
 }
 
@@ -80,12 +85,12 @@ vec4 addTexture(void){
 
 void main(void) 
 {	
-	vec4 texCol = addTexture();
-				
-	if(texCol.a < 0.5) discard;
 	float shadow = 1.0;
+	vec4 color = addTexture();
+	
+	if(color.a < 0.5) discard;
 	shadow = addShadows();
-	if(shadow==0.0) shadow+=0.4;
+	color *= addPhongBlinn(shadow);
 
-	gl_FragColor = texCol*shadow*addPhongBlinn();
+	gl_FragColor = color;
 }

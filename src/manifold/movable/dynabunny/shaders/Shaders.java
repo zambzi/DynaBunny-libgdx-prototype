@@ -1,6 +1,7 @@
 package manifold.movable.dynabunny.shaders;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 /**
  * 
@@ -10,8 +11,6 @@ import com.badlogic.gdx.Gdx;
  *
  */
 public final class Shaders {
-	public String fPhongBlinn;
-	public String vPhongBlinn;
 	public String fShadowMap;
 	public String vShadowMap;
 	public String fShadowGen;
@@ -19,8 +18,6 @@ public final class Shaders {
 	
 
 	public Shaders(){
-		fPhongBlinn = Gdx.files.internal("data/shaders/f_phongBlinn.glsl").readString();
-		vPhongBlinn = Gdx.files.internal("data/shaders/v_phongBlinn.glsl").readString();
 		fShadowMap = Gdx.files.internal("data/shaders/f_shadowMap.glsl").readString();
 		vShadowMap = Gdx.files.internal("data/shaders/v_shadowMap.glsl").readString();
 		fShadowGen = Gdx.files.internal("data/shaders/f_shadowGen.glsl").readString();

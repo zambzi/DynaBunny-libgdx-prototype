@@ -46,7 +46,6 @@ public class Pawn{
     	private Material material;
     	private Matrix4 transform = new Matrix4(); //for mesh
     	private Matrix4 transProjection = new Matrix4(); //for light effects
-    	//private Matrix4 lightView = new Matrix4(); //for shadows
     	private List<Matrix4> lightView;
     	private Vector3 position = new Vector3(0,0,0);
     	private float angle = 0;
@@ -54,7 +53,6 @@ public class Pawn{
     	private Vector3 scale = new Vector3(1,1,1);
     	public String animationName = "still";
     	private boolean animLoop = false;
-    	private boolean isRenderable = true; //TODO: add exclusion functionality
     	
     	//material values
     	private float[] ambientFactor = new float[]{0.1f,0.1f,0.1f,1f};
@@ -89,20 +87,8 @@ public class Pawn{
         	manager.getModel(model).setMaterial(material);
         }
         
-        public void draw(PerspectiveCamera cam, ShaderProgram meshShader){
-        	if(model == null)
-        		throw new IllegalStateException("draw called before a mesh has been created");
-        	
-        	transformMatrix(cam);
-        	meshShader.setUniformMatrix("u_ModelViewMatrix", transform, false);
-        	resetTexture();
-        	manager.getTexture(texture).bind();
-        	setUniforms(meshShader);
-        	material.bind(meshShader);
-        	manager.getModel(model).render(meshShader);
-        }
         
-        public void drawShadows(PerspectiveCamera cam, ShaderProgram meshShader, LightManager lights, boolean genShadows){
+        public void draw(PerspectiveCamera cam, ShaderProgram meshShader, LightManager lights, boolean genShadows){
         	if(model == null)
         		throw new IllegalStateException("draw called before a mesh has been created");
         	
@@ -115,6 +101,7 @@ public class Pawn{
             	material.bind(meshShader);
         	}
         	meshShader.setUniformMatrix("u_lightView", lightView.get(0), false);//TODO: change to multiple lights
+        	
         	manager.getModel(model).render(meshShader);
         }
         
@@ -218,14 +205,15 @@ public class Pawn{
         	this.position = position;
         }
         
-        private void transformMatrix(PerspectiveCamera cam){
+        private void transformMatrix(PerspectiveCamera cam){        	
         	transform.set(cam.combined);
-        	transProjection.set(cam.projection);
         	transform.translate(position);
         	transform.rotate(axis, angle);
-        	transProjection.rotate(axis.z, axis.x, axis.y, angle);
         	transform.scale(scale.x, scale.y, scale.z);
-        	transProjection.scale(scale.z, scale.x, scale.y);
+        	transProjection.set(cam.combined);
+        	//transProjection.translate(position);
+        	transProjection.rotate(axis.x, axis.y, axis.z, angle);
+        	//transProjection.scale(scale.x, scale.y, scale.z);
         }
         
         private void transformLights(Light[] lights){
@@ -234,7 +222,7 @@ public class Pawn{
         		lightView.add(new Matrix4(lights[i].lightView.combined));
         		lightView.get(i).translate(position);
         		lightView.get(i).scale(scale.x, scale.y, scale.z);
-        		lightView.get(i).rotate(axis.z, axis.x, axis.y, angle);
+        		lightView.get(i).rotate(axis.x, axis.y, axis.z, angle);
         	}
         }
         

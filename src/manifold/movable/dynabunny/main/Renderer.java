@@ -38,10 +38,12 @@ public class Renderer extends Game{
 		pawnManager = new PawnManager();
 		createPawns();
 		setLights(new LightManager(1,cam));
-		shaderRenderer = new ShaderRenderer(lights, pawnManager, cam);
-		lights.getLight(0).setDirection(0,-1,-1);		
-		lights.setupLight(0, new float[]{-1.0f,-1.0f,-1.0f},new float[]{.5f,.5f,.5f,1.0f},new float[]{.7f,.7f,.7f,1.0f},new float[]{1.0f,1.0f,1.0f,1.0f});
+		shaderRenderer = new ShaderRenderer(lights, pawnManager, cam);	
+		lights.setupLight(0, new float[]{0.0f,0.0f,1.0f},new float[]{.1f,.1f,.1f,1.0f},new float[]{.9f,.9f,.9f,1.0f},new float[]{1.0f,1.0f,1.0f,1.0f});
 		inputManager = new InputManager();
+		//cam.position.set(lights.getLight(0).lightView.position);
+		//cam.direction.set(lights.getLight(0).lightView.direction);
+		
 	}
 
 	@Override
@@ -60,8 +62,12 @@ public class Renderer extends Game{
 		vec.nor();
 		vec.mul((float)inputManager.dragX/10);
 		cam.translate(vec);
-		lights.getLight(0).rotate(1, new Vector3(0,1,0));
+		//lights.getLight(0).rotate(1, new Vector3(0,1,0));
 		//lights.getLight(0).rotate(1, new Vector3(1,0,0));
+		
+		//pawnManager.getPawn("bunny").rotate(new Vector3(0,1,0), 1);
+	//	pawnManager.getPawn("bunny2").rotate(new Vector3(1,0,0), 1);
+	//	pawnManager.getPawn("bunny3").rotate(new Vector3(0,0,1), 1);
 		
 		cam.update();
 		pawnManager.animatePawns();
@@ -90,7 +96,7 @@ public class Renderer extends Game{
 	
 	private void createCamera(){
 		cam = new PerspectiveCamera(90f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.position.set(40,40,40);
+		cam.position.set(50,50,50);
 		cam.direction.set(-1,-1,-1);
 	}
 	
@@ -107,18 +113,26 @@ public class Renderer extends Game{
 	private void createPawns(){
 		try {
 			pawnManager.addPawn("bunny", "bunny2-small.md2", "bunny-warface.png", cam);
+			pawnManager.addPawn("bunny2", "bunny2-small.md2", "bunny.png", cam);
+			pawnManager.addPawn("bunny3", "bunny2-small.md2", "bunny.png", cam);
 			pawnManager.addPawn("wall", "wall-4.md2", "wall.png", cam);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//By default: x is bunny's front-back; y is bunny's up-down; z is bunny's right-left
 		
-		pawnManager.getPawn("bunny").setAmbientFactor(.5f, .5f, .5f, 1f);
 		pawnManager.getPawn("wall").setAmbientFactor(.5f, .5f, .5f, 1f);
 		pawnManager.getPawn("bunny").resize(0.3f);
+		pawnManager.getPawn("bunny3").resize(0.3f);
 		pawnManager.getPawn("wall").setPosition(new Vector3(0,-20,0));
-		pawnManager.getPawn("bunny").setPosition(new Vector3(0,0,0));
-		pawnManager.getPawn("bunny").animate("walkCycle", true);
+		pawnManager.getPawn("bunny").setPosition(new Vector3(0,0,10));
+		pawnManager.getPawn("bunny3").setPosition(new Vector3(0,0,30));
+		//pawnManager.getPawn("bunny").animate("walkCycle", true);
+		pawnManager.getPawn("bunny2").resize(0.5f);
+		pawnManager.getPawn("bunny2").setPosition(new Vector3(0,0,-10));
+		
+		
 	}
 
 	

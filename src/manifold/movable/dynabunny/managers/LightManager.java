@@ -5,6 +5,8 @@ import java.nio.FloatBuffer;
 
 import manifold.movable.dynabunny.actors.Light;
 
+import android.util.Log;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -32,6 +34,7 @@ public class LightManager {
 	public LightManager(int lightsAmount, PerspectiveCamera cam){
 		this.lightsAmount = lightsAmount;
 		lights = new Light[lightsAmount];
+		
 	}
 	
 	public void setupLight(	int lightIndex, 
@@ -65,7 +68,7 @@ public class LightManager {
 	
 	public void bind(PerspectiveCamera cam, ShaderProgram shader){
 		shader.setUniformf(shader.getUniformLocation("u_camDirection"), cam.direction);
-		int bufferLength = lightsAmount*16;
+		int bufferLength = lightsAmount*4;
 		
 		ByteBuffer dirByte = BufferUtils.newByteBuffer(bufferLength*4);
 		ByteBuffer ambByte = BufferUtils.newByteBuffer(bufferLength*4);
@@ -81,30 +84,27 @@ public class LightManager {
 		int location3 = shader.getUniformLocation("diffuseColor[0]");
 		int location4 = shader.getUniformLocation("specularColor[0]");
 		
-		fillAndPassBuffer(0, lightsAmount, location1, dirBuffer, 3);
-		fillAndPassBuffer(1, lightsAmount, location2, ambBuffer, 4);
-		fillAndPassBuffer(2, lightsAmount, location3, difBuffer, 4);
-		fillAndPassBuffer(3, lightsAmount, location4, specBuffer, 4);
-
+		fillAndPassBuffer(0, lightsAmount, location1, dirBuffer);
+		fillAndPassBuffer(1, lightsAmount, location2, ambBuffer);
+		fillAndPassBuffer(2, lightsAmount, location3, difBuffer);
+		fillAndPassBuffer(3, lightsAmount, location4, specBuffer);
+		dirBuffer.clear();
 	}
 	
 	
-	private void fillAndPassBuffer(int type, int lightsAmount, int location, FloatBuffer buffer, int vecType){
+	private void fillAndPassBuffer(int type, int lightsAmount, int location, FloatBuffer buffer){
 		for(int i=0; i<lightsAmount; ++i){
 			switch(type){
-				case 0 : buffer.put(lights[i].direction); break;
+				case 0 : buffer.put(lights[i].direction); buffer.put(1.0f);break;
 				case 1 : buffer.put(lights[i].ambientColor); break;
 				case 2 : buffer.put(lights[i].diffuseColor); break;
 				case 3 : buffer.put(lights[i].specColor); break;
 			}
+			
 		}
 		buffer.flip();
 		GL20 gl = Gdx.graphics.getGL20();
-		switch(vecType){
-			case 3 : gl.glUniform3fv(location, buffer.capacity()/vecType, buffer); break;
-			case 4 : gl.glUniform4fv(location, buffer.capacity()/vecType, buffer); break;
-		}
-		
+		gl.glUniform4fv(location, buffer.capacity()/4, buffer);
 	}
 	
 	public Light getLight(int index){

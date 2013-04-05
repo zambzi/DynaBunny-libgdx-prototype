@@ -26,22 +26,20 @@ public class ShaderRenderer {
 	private ShaderProgram shadowMapSP;
 	
 	private FrameBuffer shadowMapBuffer;
-	private FrameBuffer shadowBuffer;
 	
 	
 	public ShaderRenderer(LightManager lights, PawnManager pawns, PerspectiveCamera cam){
 		this.lights = lights;
 		this.pawns = pawns;
 		this.cam = cam;
+		shaders = new Shaders();
 		buildShaders();
 		shadowMapBuffer = new FrameBuffer(Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 		lights.setShadowBuffer(shadowMapBuffer, cam);
 	}
 	
 	public void render(){
-		
 		GL20 gl = Gdx.graphics.getGL20();
-		//gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		
 		gl.glDepthFunc(GL20.GL_LEQUAL);
 		gl.glDepthRangef(0.0f, 1.0f);
@@ -53,47 +51,30 @@ public class ShaderRenderer {
 		gl.glFrontFace(GL20.GL_CW);
 		
 		
-		//gl.glFrontFace(GL20.GL_CCW);
-		
 		shadowMapBuffer.begin();
-			//gl.glCullFace(GL20.GL_FRONT);
 			gl.glClearColor(1, 1, 1, 1);
 			gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 			gl.glClearColor(0, 0, 0, 0);
 			shadowGenSP.begin();
-				pawns.batchShadows(cam, shadowGenSP, lights, true);
+				pawns.batchDraw(cam, shadowGenSP, lights, true);
 			shadowGenSP.end();
 		shadowMapBuffer.end();
 		
 		gl.glClearColor(.8f,.8f,.8f,1);
-		//gl.glCullFace(GL20.GL_BACK);
-		gl.glDisable(GL20.GL_CULL_FACE);
-		
-		//shadowBuffer.begin();
-			//gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-			shadowMapSP.begin();
-				shadowMapBuffer.getColorBufferTexture().bind(5);
-				shadowMapSP.setUniformi("s_shadowMap",5);
-				lights.bind(cam, phongBlinnSP);
-				pawns.batchShadows(cam, shadowMapSP, lights, false);
-			shadowMapSP.end();
-		//shadowBuffer.end();
-		
-		/*phongBlinnSP.begin();
-			shadowBuffer
-			
-			pawns.batchDraw(cam, phongBlinnSP);
-		phongBlinnSP.end();
-	*/	
+
+		shadowMapSP.begin();
+			shadowMapSP.setUniformMatrix("u_worldMatrix", cam.combined);
+			shadowMapBuffer.getColorBufferTexture().bind(5);//TODO: this may fuck up texture bindings
+			shadowMapSP.setUniformi("s_shadowMap",5);
+			lights.bind(cam, shadowMapSP);
+			pawns.batchDraw(cam, shadowMapSP, lights, false);
+		shadowMapSP.end();
+
 	}
 	
-	private void buildShaders(){
-		shaders = new Shaders();
-		phongBlinnSP = new ShaderProgram(shaders.vPhongBlinn, shaders.fPhongBlinn);
+	public void buildShaders(){
 		shadowGenSP = new ShaderProgram(shaders.vShadowGen, shaders.fShadowGen);
 		shadowMapSP = new ShaderProgram(shaders.vShadowMap, shaders.fShadowMap);
-		if (!phongBlinnSP.isCompiled())
-			throw new IllegalStateException(phongBlinnSP.getLog());
 		if (!shadowMapSP.isCompiled())
 			throw new IllegalStateException(shadowMapSP.getLog());
 		if (!shadowGenSP.isCompiled())

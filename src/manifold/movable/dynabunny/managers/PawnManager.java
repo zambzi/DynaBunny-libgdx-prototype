@@ -48,19 +48,12 @@ public class PawnManager {
 		manager.addTexture(handle);
 	}
 	
-
-	public void batchDraw(PerspectiveCamera cam, ShaderProgram shader){
-		Iterator<Pawn> itr = pawns.values().iterator();
-		while(itr.hasNext()){
-			itr.next().draw(cam, shader);
-		}
-	}
 	
 
-	public void batchShadows(PerspectiveCamera cam, ShaderProgram shader, LightManager lights, boolean genShadows){
+	public void batchDraw(PerspectiveCamera cam, ShaderProgram shader, LightManager lights, boolean genShadows){
 		Iterator<Pawn> itr = pawns.values().iterator();
 		while(itr.hasNext()){
-			itr.next().drawShadows(cam, shader, lights, genShadows);
+			itr.next().draw(cam, shader, lights, genShadows);
 		}
 	}
 	
