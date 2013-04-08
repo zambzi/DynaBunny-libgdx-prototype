@@ -55,7 +55,7 @@ public class Pawn{
     	private boolean animLoop = false;
     	
     	//material values
-    	private float[] ambientFactor = new float[]{0.1f,0.1f,0.1f,1f};
+    	private float[] ambientFactor = new float[]{0.5f,0.5f,0.5f,1f};
     	private float[] diffuseFactor = new float[]{0.7f,0.7f,0.7f,1f};
     	private float[] specularFactor = new float[]{0.9f,0.9f,0.9f,1f};
     	private float shininess = 0f;
@@ -95,7 +95,7 @@ public class Pawn{
         	transformLights(lights.getLights());
         	transformMatrix(cam);
         	if(!genShadows){
-        		meshShader.setUniformMatrix("u_ModelViewMatrix", transform, false);
+        		
         		resetTexture();
             	setUniforms(meshShader);
             	material.bind(meshShader);
@@ -124,6 +124,7 @@ public class Pawn{
     		meshShader.setUniformf(	meshShader.getUniformLocation("u_material.shininess"),
     								shininess	);
     		
+    		meshShader.setUniformMatrix("u_ModelViewMatrix", transform, false);
     		meshShader.setUniformMatrix("u_ProjectionMatrix", transProjection, false);
         }
         
@@ -205,12 +206,13 @@ public class Pawn{
         	this.position = position;
         }
         
+        
         private void transformMatrix(PerspectiveCamera cam){        	
         	transform.set(cam.combined);
         	transform.translate(position);
         	transform.rotate(axis, angle);
         	transform.scale(scale.x, scale.y, scale.z);
-        	transProjection.set(cam.combined);
+        	transProjection.set(cam.projection);
         	//transProjection.translate(position);
         	transProjection.rotate(axis.x, axis.y, axis.z, angle);
         	//transProjection.scale(scale.x, scale.y, scale.z);

@@ -16,7 +16,6 @@ uniform vec4 ambientColor[MAX_LIGHTS];
 uniform vec4 diffuseColor[MAX_LIGHTS];
 uniform vec4 specularColor[MAX_LIGHTS];
 uniform vec3 u_camDirection;
-uniform mat4 u_worldMatrix;
 
 struct Material {
 	vec4 ambientFactor;
@@ -58,8 +57,7 @@ vec4 addPhongBlinn(float shadow)
 	
 	int i = 0;
 	while(i<MAX_LIGHTS){
-		vec4 dir = u_worldMatrix * direction[i];
-		
+		vec4 dir = direction[i];		
 		
 		float diffValue = max(0.0, dot(v_eyeVec, dir.xyz));
 		vec3 halfVector = normalize(dir.xyz + viewDir);
@@ -72,9 +70,8 @@ vec4 addPhongBlinn(float shadow)
 		}
 		++i;
 	}
-	shadow +=1.0;
+	//shadow +=1.0; //uncomment to hide shadows
 	vec4 light = (shadow==0.0 ? ambientLight: ambientLight+diffuseLight+specularLight);
-	//vec4 light = (ambientLight+diffuseLight+specularLight)*shadowColor;
 	return light;
 }
 

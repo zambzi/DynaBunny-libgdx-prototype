@@ -39,10 +39,8 @@ public class Renderer extends Game{
 		createPawns();
 		setLights(new LightManager(1,cam));
 		shaderRenderer = new ShaderRenderer(lights, pawnManager, cam);	
-		lights.setupLight(0, new float[]{0.0f,0.0f,1.0f},new float[]{.1f,.1f,.1f,1.0f},new float[]{.9f,.9f,.9f,1.0f},new float[]{1.0f,1.0f,1.0f,1.0f});
+		lights.setupLight(0, new float[]{-1.0f,-1.0f,-1.0f},new float[]{.5f,.5f,.5f,1.0f},new float[]{.9f,.9f,.9f,1.0f},new float[]{1.0f,1.0f,1.0f,1.0f});
 		inputManager = new InputManager();
-		//cam.position.set(lights.getLight(0).lightView.position);
-		//cam.direction.set(lights.getLight(0).lightView.direction);
 		
 	}
 
@@ -57,17 +55,19 @@ public class Renderer extends Game{
 		//following is just screwing up with camera
 		cam.rotateAround(new Vector3(0,0,0), new Vector3(0,1,0), -inputManager.dragY);
 		//cam.rotateAround(new Vector3(0,0,0), new Vector3(1,0,0), -inputManager.dragX);
+		
 		//Camera zoom-on-target functionality:
 		Vector3 vec = cam.position.cpy();
 		vec.nor();
 		vec.mul((float)inputManager.dragX/10);
 		cam.translate(vec);
+		
 		//lights.getLight(0).rotate(1, new Vector3(0,1,0));
 		//lights.getLight(0).rotate(1, new Vector3(1,0,0));
 		
-		//pawnManager.getPawn("bunny").rotate(new Vector3(0,1,0), 1);
-	//	pawnManager.getPawn("bunny2").rotate(new Vector3(1,0,0), 1);
-	//	pawnManager.getPawn("bunny3").rotate(new Vector3(0,0,1), 1);
+		pawnManager.getPawn("bunny").rotate(new Vector3(0,1,0), 1);
+		pawnManager.getPawn("bunny2").rotate(new Vector3(1,0,0), 1);
+		pawnManager.getPawn("bunny3").rotate(new Vector3(0,0,1), 1);
 		
 		cam.update();
 		pawnManager.animatePawns();

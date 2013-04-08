@@ -95,7 +95,7 @@ public class LightManager {
 	private void fillAndPassBuffer(int type, int lightsAmount, int location, FloatBuffer buffer){
 		for(int i=0; i<lightsAmount; ++i){
 			switch(type){
-				case 0 : buffer.put(lights[i].direction); buffer.put(1.0f);break;
+				case 0 : buffer.put(lights[i].direction); buffer.put(0.0f);break;
 				case 1 : buffer.put(lights[i].ambientColor); break;
 				case 2 : buffer.put(lights[i].diffuseColor); break;
 				case 3 : buffer.put(lights[i].specColor); break;
