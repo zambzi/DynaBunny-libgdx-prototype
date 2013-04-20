@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g3d.loaders.ModelLoaderRegistry;
 import com.badlogic.gdx.graphics.g3d.loaders.md2.MD2Loader;
 import com.badlogic.gdx.graphics.g3d.model.keyframe.KeyframedModel;
 
@@ -31,7 +32,7 @@ public class ModelManager {
 	public void addModel(String handle, float animationSpeed) throws FileNotFoundException{
 		FileHandle file = Gdx.files.internal("3dModels/"+handle);
 		if(!file.exists()) throw new FileNotFoundException("Model:"+file.path()+" not found");
-		else models.put(handle,loader.load(file, animationSpeed));
+		else models.put(handle,ModelLoaderRegistry.loadKeyframedModel(file));
 	}
 	
 	public void addTexture(String handle) throws FileNotFoundException{

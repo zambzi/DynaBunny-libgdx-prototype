@@ -50,15 +50,15 @@ float addShadows()
 
 vec4 addPhongBlinn(float shadow)
 {
-	vec3 viewDir = normalize(-u_camDirection);
+	vec3 viewDir = normalize(u_camDirection);
 	vec4 ambientLight = vec4(0.0);
 	vec4 diffuseLight = vec4(0.0);
 	vec4 specularLight = vec4(0.0);
 	
 	int i = 0;
 	while(i<MAX_LIGHTS){
-		vec4 dir = direction[i];		
-		
+		vec4 dir = normalize(direction[i])*0.001;
+		//dir += vec4(1,1,1,1);
 		float diffValue = max(0.0, dot(v_eyeVec, dir.xyz));
 		vec3 halfVector = normalize(dir.xyz + viewDir);
 		float specValue = max(0.0, dot(v_eyeVec, halfVector));
@@ -70,8 +70,10 @@ vec4 addPhongBlinn(float shadow)
 		}
 		++i;
 	}
-	//shadow +=1.0; //uncomment to hide shadows
+	shadow +=1.0; //uncomment to hide shadows
 	vec4 light = (shadow==0.0 ? ambientLight: ambientLight+diffuseLight+specularLight);
+	light*=0.001;
+	light+=0.999;
 	return light;
 }
 
@@ -82,12 +84,11 @@ vec4 addTexture(void){
 
 void main(void) 
 {	
+	bool test = true;
 	float shadow = 1.0;
 	vec4 color = addTexture();
-	
 	if(color.a < 0.5) discard;
 	shadow = addShadows();
 	color *= addPhongBlinn(shadow);
-
 	gl_FragColor = color;
 }

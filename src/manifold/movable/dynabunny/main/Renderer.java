@@ -37,6 +37,7 @@ public class Renderer extends Game{
 		createCamera();
 		pawnManager = new PawnManager();
 		createPawns();
+		//ignore lights for now
 		setLights(new LightManager(1,cam));
 		shaderRenderer = new ShaderRenderer(lights, pawnManager, cam);	
 		lights.setupLight(0, new float[]{-1.0f,-1.0f,-1.0f},new float[]{.5f,.5f,.5f,1.0f},new float[]{.9f,.9f,.9f,1.0f},new float[]{1.0f,1.0f,1.0f,1.0f});

@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g3d.materials.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.model.SubMesh;
 import com.badlogic.gdx.graphics.g3d.model.keyframe.KeyframedModel;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
@@ -44,8 +45,10 @@ public class Pawn{
     	private String model;
     	private float animTime = 0;
     	private Material material;
-    	private Matrix4 transform = new Matrix4(); //for mesh
-    	private Matrix4 transProjection = new Matrix4(); //for light effects
+    	private Matrix4 modelViewProjectionMatrix = new Matrix4(); //for mesh
+    	private Matrix4 modelViewMatrix = new Matrix4(); //for light effects
+    	private Matrix4 modelMatrix = new Matrix4();
+    	private Matrix3 normalMatrix = new Matrix3();
     	private List<Matrix4> lightView;
     	private Vector3 position = new Vector3(0,0,0);
     	private float angle = 0;
@@ -67,7 +70,7 @@ public class Pawn{
         	this.model = modelHandle;
 			createModel();
         	createMaterial();
-        	transform.set(combinedMatrix);
+        	modelViewProjectionMatrix.set(combinedMatrix);
         	lightView = new ArrayList<Matrix4>();
         }
         
@@ -124,8 +127,8 @@ public class Pawn{
     		meshShader.setUniformf(	meshShader.getUniformLocation("u_material.shininess"),
     								shininess	);
     		
-    		meshShader.setUniformMatrix("u_ModelViewMatrix", transform, false);
-    		meshShader.setUniformMatrix("u_ProjectionMatrix", transProjection, false);
+    		meshShader.setUniformMatrix("u_ModelViewMatrix", modelViewProjectionMatrix);
+    		meshShader.setUniformMatrix("u_normalMatrix", normalMatrix);
         }
         
 
@@ -187,12 +190,12 @@ public class Pawn{
         }
         
         /**
-         * Values are given in range 0..n
-         * 0 - no shine
-         * less than 5 - weird effects
-         * around 10 - very subtle shine
-         * 20-50 - metal like shine
-         * 50-100 - shiny plastic
+         * Values are given in range 0..n;
+         * 0 - no shine;
+         * less than 5 - weird effects;
+         * around 10 - very subtle shine;
+         * 20-50 - metal like shine;
+         * 50-100 - shiny plastic;
          */
         public void setShininess(float shine){
         	shininess = shine;
@@ -202,20 +205,28 @@ public class Pawn{
         	return manager.getModel(model);
         }
         
+        /**
+         * Simple enough - positions object by a vector
+         * @param position
+         */
         public void setPosition(Vector3 position){
         	this.position = position;
         }
         
         
-        private void transformMatrix(PerspectiveCamera cam){        	
-        	transform.set(cam.combined);
-        	transform.translate(position);
-        	transform.rotate(axis, angle);
-        	transform.scale(scale.x, scale.y, scale.z);
-        	transProjection.set(cam.projection);
-        	//transProjection.translate(position);
-        	transProjection.rotate(axis.x, axis.y, axis.z, angle);
-        	//transProjection.scale(scale.x, scale.y, scale.z);
+        private void transformMatrix(PerspectiveCamera cam){
+        	modelMatrix.setToTranslationAndScaling(position, scale);
+        	modelMatrix.rotate(axis, angle);
+        	
+        	modelViewProjectionMatrix.set(cam.combined);
+        	modelViewProjectionMatrix.mul(modelMatrix);
+        	
+        	Matrix4 normal = new Matrix4();
+        	//normal.set(cam.combined);
+        	normal.idt();
+        	normal.mul(modelMatrix);
+        	normal.rotate(axis.x, axis.y, axis.z, angle);
+        	normalMatrix.set(normal.toNormalMatrix());
         }
         
         private void transformLights(Light[] lights){
@@ -236,8 +247,8 @@ public class Pawn{
          */
         public void rotate(Vector3 axis, float angle){
         	this.axis = axis;
-        	this.angle += angle;
-        	angle = (angle>360 ? angle-360 : angle);
+        	this.angle += (angle>360 ? angle-360 : angle);
+        	//angle = (angle>360 ? angle-360 : angle);
         }
         
         /**
