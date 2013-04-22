@@ -7,12 +7,15 @@ import manifold.movable.dynabunny.managers.LightManager;
 import manifold.movable.dynabunny.managers.PawnManager;
 import manifold.movable.dynabunny.shaders.Shaders;
 
+import android.util.Log;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g3d.model.keyframe.KeyframedAnimation;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 
@@ -37,12 +40,10 @@ public class Renderer extends Game{
 		createCamera();
 		pawnManager = new PawnManager();
 		createPawns();
-		//ignore lights for now
-		setLights(new LightManager(1,cam));
-		shaderRenderer = new ShaderRenderer(lights, pawnManager, cam);	
-		lights.setupLight(0, new float[]{-1.0f,-1.0f,-1.0f},new float[]{.5f,.5f,.5f,1.0f},new float[]{.9f,.9f,.9f,1.0f},new float[]{1.0f,1.0f,1.0f,1.0f});
+		lights = new LightManager(1,cam);
+		shaderRenderer = new ShaderRenderer(lights, pawnManager, cam);
+		setLights();
 		inputManager = new InputManager();
-		
 	}
 
 	@Override
@@ -60,18 +61,10 @@ public class Renderer extends Game{
 		//Camera zoom-on-target functionality:
 		Vector3 vec = cam.position.cpy();
 		vec.nor();
-		vec.mul((float)inputManager.dragX/10);
+		vec.mul((float)inputManager.dragX/50);
 		cam.translate(vec);
 		
-		//lights.getLight(0).rotate(1, new Vector3(0,1,0));
-		//lights.getLight(0).rotate(1, new Vector3(1,0,0));
-		
-		pawnManager.getPawn("bunny").rotate(new Vector3(0,1,0), 1);
-		pawnManager.getPawn("bunny2").rotate(new Vector3(1,0,0), 1);
-		pawnManager.getPawn("bunny3").rotate(new Vector3(0,0,1), 1);
-		
 		cam.update();
-		pawnManager.animatePawns();
 		shaderRenderer.render();
 		inputManager.resetValues();
 	}
@@ -97,7 +90,7 @@ public class Renderer extends Game{
 	
 	private void createCamera(){
 		cam = new PerspectiveCamera(90f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.position.set(50,50,50);
+		cam.position.set(10,10,10);
 		cam.direction.set(-1,-1,-1);
 	}
 	
@@ -106,16 +99,16 @@ public class Renderer extends Game{
 	 * use to add new light scheme to renderer
 	 * @param lights - LightArray object
 	 */
-	public void setLights(LightManager lights){
-		this.lights = lights;
+	public void setLights(){
+		lights.setupLight(0, new float[]{-1.0f,-1.0f,-1.0f},new float[]{.5f,.5f,.5f,1.0f},new float[]{.9f,.9f,.9f,1.0f},new float[]{1.0f,1.0f,1.0f,1.0f});
 	}	
 	
 	//TODO: remove if level class is done
 	private void createPawns(){
 		try {
-			pawnManager.addPawn("bunny", "bunny2-small.md2", "bunny-warface.png", cam);
-			pawnManager.addPawn("bunny2", "bunny2-small.md2", "bunny.png", cam);
-			pawnManager.addPawn("bunny3", "bunny2-small.md2", "bunny.png", cam);
+			pawnManager.addPawn("bunny1", "bunny.md2", "bunny-warface.png", cam);
+			pawnManager.addPawn("bunny2", "bunny.md2", "bunny.png", cam);
+			pawnManager.addPawn("bunny3", "bunny.md2", "bunny.png", cam);
 			pawnManager.addPawn("wall", "wall-4.md2", "wall.png", cam);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -123,17 +116,21 @@ public class Renderer extends Game{
 		}
 		//By default: x is bunny's front-back; y is bunny's up-down; z is bunny's right-left
 		
-		pawnManager.getPawn("wall").setAmbientFactor(.5f, .5f, .5f, 1f);
-		pawnManager.getPawn("bunny").resize(0.3f);
-		pawnManager.getPawn("bunny3").resize(0.3f);
-		pawnManager.getPawn("wall").setPosition(new Vector3(0,-20,0));
-		pawnManager.getPawn("bunny").setPosition(new Vector3(0,0,10));
-		pawnManager.getPawn("bunny3").setPosition(new Vector3(0,0,30));
-		//pawnManager.getPawn("bunny").animate("walkCycle", true);
-		pawnManager.getPawn("bunny2").resize(0.5f);
-		pawnManager.getPawn("bunny2").setPosition(new Vector3(0,0,-10));
+		pawnManager.getPawn("wall").resize(8f);
 		
+		pawnManager.getPawn("wall").setPosition(new Vector3(0,-12.5f,0));
+		pawnManager.getPawn("bunny1").setPosition(new Vector3(0,5,5));
+		pawnManager.getPawn("bunny3").setPosition(new Vector3(5,5.5f,0));
+		pawnManager.getPawn("bunny2").setPosition(new Vector3(0,5,-5));	
 		
+		pawnManager.getPawn("bunny2").animate("idle1", true);
+		pawnManager.getPawn("bunny3").animate("shake", true);
+		pawnManager.getPawn("bunny1").animate("walkCycle", true);
+		
+		//let's make bunny3 a little more colorful:
+		pawnManager.getPawn("bunny3").setDiffuseFactor(0.5f, 0.8f, 0.5f, 1);
+		pawnManager.getPawn("bunny3").setAmbientFactor(0.3f, 0.1f, 0.1f, 1);
+			
 	}
 
 	

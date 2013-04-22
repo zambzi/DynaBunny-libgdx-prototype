@@ -21,7 +21,6 @@ public class ShaderRenderer {
 	private PerspectiveCamera cam;
 	private Shaders shaders;
 	
-	private ShaderProgram phongBlinnSP;
 	private ShaderProgram shadowGenSP;
 	private ShaderProgram shadowMapSP;
 	
@@ -40,21 +39,20 @@ public class ShaderRenderer {
 		lights.setShadowBuffer(shadowMapBuffer, cam);
 	}
 	
-	public void render(){		
+	public void render(){
+		gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		gl.glDepthFunc(GL20.GL_LEQUAL);
 		gl.glDepthRangef(0.0f, 1.0f);
-		gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT
-			| (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
 		gl.glEnable(GL20.GL_CULL_FACE);
-		gl.glCullFace(GL20.GL_BACK);
 		gl.glEnable(GL20.GL_DEPTH_TEST);
-		gl.glFrontFace(GL20.GL_CW);
+		gl.glFrontFace(GL20.GL_CCW);
 		
-		
+		gl.glCullFace(GL20.GL_FRONT);
 		generateShadowMap();
-		
+		//gl.glCullFace(GL20.GL_BACK);
+		gl.glDisable(GL20.GL_CULL_FACE);
 		gl.glClearColor(.8f,.8f,.8f,1);
-
+		
 		draw();
 		//drawShadowMap(); //uncomment to see light point of view, and depthBuffer at work
 
@@ -65,7 +63,7 @@ public class ShaderRenderer {
 		shadowMapBuffer.begin();
 			gl.glClearColor(1, 1, 1, 1);
 			gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-			gl.glClearColor(0, 0, 0, 0);
+			//gl.glClearColor(0, 0, 0, 0);
 			shadowGenSP.begin();
 				pawns.batchDraw(cam, shadowGenSP, lights, true);
 			shadowGenSP.end();
@@ -78,7 +76,6 @@ public class ShaderRenderer {
 	private void drawShadowMap(){
 		gl.glClearColor(1, 1, 1, 1);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		gl.glClearColor(0, 0, 0, 0);
 		shadowGenSP.begin();
 			pawns.batchDraw(cam, shadowGenSP, lights, true);
 		shadowGenSP.end();
@@ -103,7 +100,6 @@ public class ShaderRenderer {
 	}
 	
 	public void dispose(){
-		phongBlinnSP.dispose();
 		shadowGenSP.dispose();
 		shadowMapSP.dispose();
 	}

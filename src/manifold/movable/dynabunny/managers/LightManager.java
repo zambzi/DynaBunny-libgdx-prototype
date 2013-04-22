@@ -124,9 +124,9 @@ public class LightManager {
 	}
 	
 	private void setLightViews(Light light){
-		//light.lightView = new PerspectiveCamera(45,shadowBuffer.getWidth(), shadowBuffer.getHeight());
-		light.lightView = new OrthographicCamera(shadowBuffer.getWidth()/2, shadowBuffer.getHeight()/2);
-		light.lightView.zoom = 0.2f;
+		//light.lightView = new OrthographicCamera(shadowBuffer.getWidth()/2, shadowBuffer.getHeight()/2);
+		light.lightView = new OrthographicCamera(1000, 1000);
+		light.lightView.zoom = 0.04f;
 		light.setupLightView();
 		
 	}

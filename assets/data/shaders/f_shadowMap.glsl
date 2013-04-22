@@ -8,6 +8,7 @@ varying vec4 v_lightSpacePosition;
 varying vec2 v_texCoord0;
 varying vec3 v_eyeVec;
 varying mat4 v_ModelViewMatrix;
+varying vec4 test;
 
 uniform sampler2D s_shadowMap;
 uniform sampler2D u_texture;
@@ -27,7 +28,7 @@ uniform Material u_material;
 
 float unpack(vec4 packedZValue)
 {	
-	//const vec4 unpackFactors = vec4( 1.0 / (256.0 * 256.0 * 256.0), 1.0 / (256.0 * 256.0), 1.0 / 256.0, 1.0 );
+	//values: 1/256^3; 1/256^2; 1/256; 1
 	const vec4 unpackFactors = vec4(0.00000006, 0.000015259, 0.00390625, 1);
 	return dot(packedZValue,unpackFactors);
 }
@@ -50,16 +51,15 @@ float addShadows()
 
 vec4 addPhongBlinn(float shadow)
 {
-	vec3 viewDir = normalize(u_camDirection);
+	vec3 viewDir = normalize(-u_camDirection);
 	vec4 ambientLight = vec4(0.0);
 	vec4 diffuseLight = vec4(0.0);
 	vec4 specularLight = vec4(0.0);
 	
 	int i = 0;
 	while(i<MAX_LIGHTS){
-		vec4 dir = normalize(direction[i])*0.001;
-		//dir += vec4(1,1,1,1);
-		float diffValue = max(0.0, dot(v_eyeVec, dir.xyz));
+		vec4 dir = normalize(direction[i]);
+		float diffValue = abs(min(0.0, dot(v_eyeVec, dir.xyz)));
 		vec3 halfVector = normalize(dir.xyz + viewDir);
 		float specValue = max(0.0, dot(v_eyeVec, halfVector));
 		
@@ -70,10 +70,10 @@ vec4 addPhongBlinn(float shadow)
 		}
 		++i;
 	}
-	shadow +=1.0; //uncomment to hide shadows
+	//shadow +=1.0; //uncomment to hide shadows
 	vec4 light = (shadow==0.0 ? ambientLight: ambientLight+diffuseLight+specularLight);
-	light*=0.001;
-	light+=0.999;
+	//light*=0.001; //uncomment to disable Phong-Blinn Lights
+	//light+=0.999;
 	return light;
 }
 
@@ -84,11 +84,14 @@ vec4 addTexture(void){
 
 void main(void) 
 {	
-	bool test = true;
 	float shadow = 1.0;
 	vec4 color = addTexture();
+	//color*=0.001; //uncomment to disable textures
+	//color+=0.999;
 	if(color.a < 0.5) discard;
 	shadow = addShadows();
 	color *= addPhongBlinn(shadow);
+	//color *= shadow; //uncomment to enable black test-shadows
+	//color *= test; // uncomment to enable colorized normal test
 	gl_FragColor = color;
 }

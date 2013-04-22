@@ -12,6 +12,7 @@ varying vec2 v_texCoord0;
 varying vec3 v_eyeVec;
 varying vec4 v_lightSpacePosition;
 varying mat4 v_ModelViewMatrix;
+varying vec4 test;
 
 uniform mat3 u_normalMatrix;
 uniform mat4 u_ModelViewMatrix;
@@ -32,6 +33,8 @@ void main(void)
 	
 	vec3 eyeVec = normalize(u_normalMatrix*a_normal);
 	v_eyeVec = eyeVec;
+	
+	test = vec4(a_normal,1.0);//vec4(normalize(u_normalMatrix*a_normal),1.0);
 	
 	v_ModelViewMatrix = u_ModelViewMatrix;
 }

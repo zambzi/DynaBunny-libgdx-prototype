@@ -79,7 +79,7 @@ public class Light {
 	
 	public void setupLightView(){
 		lightView.position.nor();
-		lightView.position.set(-direction[0]*50f,-direction[1]*50f,-direction[2]*50f);
+		lightView.position.set(-direction[0]*10f,-direction[1]*10f,-direction[2]*10f);
 		lightView.lookAt(direction[0], direction[1], direction[2]);
 		lightView.update();
 	}

@@ -88,11 +88,4 @@ public class PawnManager {
 		return pawns.get(key);
 	}
 	
-	public void animatePawns(){
-		Iterator<Pawn> itr = pawns.values().iterator();
-		while(itr.hasNext()){
-			Pawn pawn = itr.next();
-			if(pawn.animationName!="still") pawn.animation();
-		}
-	}
 }

@@ -104,7 +104,7 @@ public class Pawn{
             	material.bind(meshShader);
         	}
         	meshShader.setUniformMatrix("u_lightView", lightView.get(0), false);//TODO: change to multiple lights
-        	
+        	if(animationName!="still")animation();
         	manager.getModel(model).render(meshShader);
         }
         
@@ -133,7 +133,7 @@ public class Pawn{
         
 
         
-        public void animation(){
+        private void animation(){
         	animTime += Gdx.graphics.getDeltaTime();
     		if (animTime >= manager.getModel(model).getAnimation(animationName).totalDuration) {
     			animTime = 0;
@@ -222,10 +222,8 @@ public class Pawn{
         	modelViewProjectionMatrix.mul(modelMatrix);
         	
         	Matrix4 normal = new Matrix4();
-        	//normal.set(cam.combined);
         	normal.idt();
-        	normal.mul(modelMatrix);
-        	normal.rotate(axis.x, axis.y, axis.z, angle);
+        	normal.rotate(-axis.y, -axis.x, -axis.z, angle); //Don't ask...
         	normalMatrix.set(normal.toNormalMatrix());
         }
         
