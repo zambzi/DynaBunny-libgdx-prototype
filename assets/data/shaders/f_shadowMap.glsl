@@ -88,7 +88,7 @@ void main(void)
 	vec4 color = addTexture();
 	//color*=0.001; //uncomment to disable textures
 	//color+=0.999;
-	if(color.a < 0.5) discard;
+	if(color.a < 0.5) discard; //walkaround for transparency blending
 	shadow = addShadows();
 	color *= addPhongBlinn(shadow);
 	//color *= shadow; //uncomment to enable black test-shadows
