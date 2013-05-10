@@ -4,11 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 
 /**
- * 
- * @author zambzi
  *
  * Main input Class
  * Everything about smearing screen with greasy fingers goes here
+ * 
+ * @author zambzi
  *
  */
 

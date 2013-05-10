@@ -5,9 +5,10 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 /**
  * 
- * @author zambzi
  *
  * Shader Loader
+ * 
+ * @author zambzi
  *
  */
 public final class Shaders {

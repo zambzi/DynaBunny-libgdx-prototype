@@ -14,8 +14,9 @@ import com.badlogic.gdx.graphics.g3d.model.keyframe.KeyframedModel;
 
 /**
  * 
- * @author zambzi
  * class solely used to load up models and textures (only for models)
+ * 
+ * @author zambzi
  *
  */
 public class ModelManager {

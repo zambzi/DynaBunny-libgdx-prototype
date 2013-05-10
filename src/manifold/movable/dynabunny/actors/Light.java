@@ -5,11 +5,11 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 
 /**
- * 
- * @author zambzi
  *
  * Simple class that holds single Light data
- * Use only with LightManager!
+ * Use only with LightManager
+ * 
+ * @author zambzi
  *
  */
 

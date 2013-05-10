@@ -30,12 +30,9 @@ import com.badlogic.gdx.math.Vector3;
 
 /**
  * 
+ * To be used only with PawnManager
+ *
  * @author zambzi
- *
- * Every map object gets its origins from here.
- * Basically its abridged and less poetic version of book of genesis...
- * Use only with PawnManager!
- *
  */
 
 public class Pawn{

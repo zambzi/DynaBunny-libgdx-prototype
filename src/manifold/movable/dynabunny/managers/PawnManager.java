@@ -12,10 +12,10 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 /**
- * 
- * @author zambzi
  *
  * Creates, manages and destroys pawns
+ * 
+ * @author zambzi
  *
  */
 
